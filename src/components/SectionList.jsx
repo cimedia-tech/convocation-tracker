@@ -4,6 +4,7 @@ import { useCollection, deleteDocument } from '../hooks/useFirestore'
 import { STATUS_WEIGHT } from './StatusBadge'
 import ProgressBar from './ProgressBar'
 import AddSectionModal from './AddSectionModal'
+import BulkImport from './BulkImport'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function SectionList() {
@@ -11,6 +12,7 @@ export default function SectionList() {
   const { docs: sections, loading: sectLoading } = useCollection('sections')
   const { docs: pages, loading: pagesLoading } = useCollection('pages', 'createdAt')
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showBulkImport, setShowBulkImport] = useState(false)
 
   const isAdmin = userProfile?.role === 'admin'
 
@@ -42,12 +44,20 @@ export default function SectionList() {
           <p className="text-gray-500 text-sm mt-1">{sections.length} section{sections.length !== 1 ? 's' : ''}</p>
         </div>
         {isAdmin && (
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="bg-church-navy text-church-gold border border-church-gold px-4 py-2 rounded-xl text-sm font-semibold hover:bg-church-darknavy transition-colors"
-          >
-            + Add Section
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowBulkImport(true)}
+              className="border border-church-gold text-church-gold bg-transparent px-4 py-2 rounded-xl text-sm font-semibold hover:bg-church-gold/10 transition-colors"
+            >
+              Bulk Import
+            </button>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="bg-church-navy text-church-gold border border-church-gold px-4 py-2 rounded-xl text-sm font-semibold hover:bg-church-darknavy transition-colors"
+            >
+              + Add Section
+            </button>
+          </div>
         )}
       </div>
 
@@ -118,6 +128,7 @@ export default function SectionList() {
       )}
 
       {showAddModal && <AddSectionModal onClose={() => setShowAddModal(false)} />}
+      {showBulkImport && <BulkImport onClose={() => setShowBulkImport(false)} />}
     </div>
   )
 }
