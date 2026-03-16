@@ -1,0 +1,49 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import Navbar from './components/Navbar'
+import Login from './components/Login'
+import PendingAccess from './components/PendingAccess'
+import Dashboard from './components/Dashboard'
+import SectionList from './components/SectionList'
+import SectionDetail from './components/SectionDetail'
+import TeamManager from './components/TeamManager'
+
+function AppRoutes() {
+  const { user, userProfile, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-church-navy flex items-center justify-center">
+        <div className="text-church-gold text-xl animate-pulse font-semibold">Loading…</div>
+      </div>
+    )
+  }
+
+  if (!user) return <Login />
+  if (userProfile?.role === 'pending') return <PendingAccess />
+
+  return (
+    <div className="min-h-screen bg-church-cream">
+      <Navbar />
+      <main>
+        <Routes>
+          <Route path="/"                    element={<Dashboard />} />
+          <Route path="/sections"            element={<SectionList />} />
+          <Route path="/sections/:sectionId" element={<SectionDetail />} />
+          <Route path="/team"                element={<TeamManager />} />
+          <Route path="*"                    element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  )
+}
