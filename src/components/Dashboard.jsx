@@ -4,13 +4,29 @@ import { useCollection } from '../hooks/useFirestore'
 import { STATUS_WEIGHT } from './StatusBadge'
 import ProgressBar from './ProgressBar'
 import StatusBadge from './StatusBadge'
+import { motion } from 'framer-motion'
 
-function StatCard({ label, value, sub, color = 'text-church-navy' }) {
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+}
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60, damping: 15 } }
+}
+
+function StatCard({ label, value, sub, active = false }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col items-center text-center">
-      <span className={`text-3xl font-bold ${color}`}>{value}</span>
-      <span className="text-sm font-medium text-gray-700 mt-1">{label}</span>
-      {sub && <span className="text-xs text-gray-400 mt-0.5">{sub}</span>}
+    <div className={`border border-church-border p-6 flex flex-col justify-between h-32 transition-colors ${active ? 'bg-church-textMain text-church-background' : 'bg-church-surface text-church-textMain'}`}>
+      <span className="text-xs font-bold uppercase tracking-widest opacity-60">{label}</span>
+      <div className="flex items-baseline gap-2">
+        <span className="text-4xl font-serif italic tracking-tighter leading-none">{value}</span>
+        {sub && <span className="text-xs uppercase tracking-widest opacity-40">{sub}</span>}
+      </div>
     </div>
   )
 }
@@ -40,103 +56,127 @@ export default function Dashboard() {
 
   if (sectLoading || pagesLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-church-navy text-lg animate-pulse">Loading dashboard…</div>
+      <div className="flex items-center justify-center min-h-[50vh] font-technical text-church-gold tracking-widest uppercase text-xs animate-pulse">
+        Polling Database...
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-church-navy">Production Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Overall progress for the Convocation Book</p>
-      </div>
-
-      {/* Overall progress */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-church-navy">Overall Book Completion</h2>
-          <span className="text-2xl font-bold text-church-gold">{Math.round(stats.overall)}%</span>
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="max-w-7xl mx-auto px-4 sm:px-8 py-12 space-y-12 font-technical"
+    >
+      {/* Editorial Header */}
+      <motion.div variants={item} className="flex flex-col md:flex-row justify-between items-end pb-6 border-b border-church-border">
+        <div>
+          <h1 className="text-5xl md:text-6xl font-serif italic text-church-textMain leading-[0.9] tracking-tight">
+            Dashboard
+            <span className="text-church-gold not-italic">.</span>
+          </h1>
         </div>
-        <ProgressBar percent={stats.overall} size="lg" />
-        <p className="text-xs text-gray-400 mt-2">
-          {stats.approved} of {stats.total} pages approved
-        </p>
-      </div>
+        <div className="text-right mt-6 md:mt-0">
+          <p className="text-[10px] text-church-textMuted uppercase tracking-widest font-bold">Volume One</p>
+          <p className="text-church-textMain font-mono text-sm tracking-widest">{new Date().getFullYear()} PRODUCTION</p>
+        </div>
+      </motion.div>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* Stat grid */}
+      <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-[1px] bg-church-border">
         <StatCard label="Total Pages" value={stats.total} />
-        <StatCard label="Approved" value={stats.approved} color="text-green-600" />
-        <StatCard label="In Progress" value={stats.inProgress} color="text-yellow-600" />
-        <StatCard label="Not Started" value={stats.notStarted} color="text-gray-400" />
-      </div>
+        <StatCard label="Approved" value={stats.approved} active={true} />
+        <StatCard label="In-Flight" value={stats.inProgress} />
+        <StatCard label="Pending" value={stats.notStarted} />
+      </motion.div>
 
-      {/* Section breakdown */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-church-navy">Section Breakdown</h2>
-          <Link to="/sections" className="text-sm text-church-gold hover:underline font-medium">
-            View All →
-          </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left Column: Sections */}
+        <div className="lg:col-span-2 space-y-8">
+          <motion.div variants={item}>
+            <div className="flex items-center justify-between mb-4 border-b border-church-border pb-2">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-church-gold h-fit">Section Index</h2>
+              <Link to="/sections" className="text-[10px] text-church-textMuted hover:text-white uppercase tracking-widest border border-church-border px-2 py-1">
+                View All
+              </Link>
+            </div>
+            
+            {sections.length === 0 ? (
+              <p className="text-church-textMuted text-xs uppercase tracking-widest py-8 text-center border border-dashed border-church-border">
+                No sections initialized. <Link to="/sections" className="text-church-gold hover:underline">Begin Assembly →</Link>
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-church-border border border-church-border">
+                {sections.map(section => {
+                  const sectionPages = pages.filter(p => p.sectionId === section.id)
+                  const pct = sectionPages.length
+                    ? sectionPages.reduce((sum, p) => sum + (STATUS_WEIGHT[p.status] || 0), 0) / sectionPages.length
+                    : 0
+                  return (
+                    <div key={section.id} className="bg-church-surface p-5 hover:bg-church-background transition-colors flex flex-col justify-between">
+                      <div className="flex items-start justify-between mb-6">
+                        <Link
+                          to={`/sections/${section.id}`}
+                          className="font-serif italic text-xl text-church-textMain hover:text-church-gold transition-colors leading-tight"
+                        >
+                          {section.name}
+                        </Link>
+                        <span className="text-[10px] font-mono text-church-textMuted bg-church-background px-2 py-0.5 border border-church-border">
+                          {String(sectionPages.length).padStart(2, '0')} PG
+                        </span>
+                      </div>
+                      <ProgressBar percent={pct} size="sm" />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </motion.div>
         </div>
-        {sections.length === 0 ? (
-          <p className="text-gray-400 text-sm text-center py-4">
-            No sections yet. <Link to="/sections" className="text-church-gold hover:underline">Add the first section →</Link>
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {sections.map(section => {
-              const sectionPages = pages.filter(p => p.sectionId === section.id)
-              const pct = sectionPages.length
-                ? sectionPages.reduce((sum, p) => sum + (STATUS_WEIGHT[p.status] || 0), 0) / sectionPages.length
-                : 0
-              return (
-                <div key={section.id}>
-                  <div className="flex items-center justify-between mb-1">
-                    <Link
-                      to={`/sections/${section.id}`}
-                      className="text-sm font-medium text-church-navy hover:text-church-gold transition-colors"
-                    >
-                      {section.name}
-                    </Link>
-                    <span className="text-xs text-gray-500">{sectionPages.length} page{sectionPages.length !== 1 ? 's' : ''}</span>
-                  </div>
-                  <ProgressBar percent={pct} size="sm" />
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
 
-      {/* Recent activity */}
-      {recentActivity.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-church-navy mb-4">Recent Activity</h2>
-          <div className="space-y-3">
-            {recentActivity.map(page => {
-              const section = sections.find(s => s.id === page.sectionId)
-              return (
-                <div key={page.id} className="flex items-center justify-between gap-3 text-sm">
-                  <div className="flex-1 min-w-0">
-                    <Link
-                      to={`/sections/${page.sectionId}`}
-                      className="font-medium text-gray-800 hover:text-church-gold truncate block"
-                    >
-                      {page.title}
-                    </Link>
-                    <span className="text-xs text-gray-400">{section?.name || '—'}</span>
-                  </div>
-                  <StatusBadge status={page.status || 'Not Started'} />
-                </div>
-              )
-            })}
-          </div>
+        {/* Right Column: Activity */}
+        <div className="space-y-8">
+          
+          <motion.div variants={item} className="bg-church-surface border border-church-border p-6">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-church-textMuted mb-2">Completion Velocity</h2>
+            <div className="flex items-end gap-2 mb-4">
+              <span className="text-6xl font-serif italic leading-[0.8] tracking-tighter text-church-gold">{Math.round(stats.overall)}</span>
+              <span className="text-xl font-mono text-church-textMain">%</span>
+            </div>
+            <ProgressBar percent={stats.overall} size="md" />
+          </motion.div>
+
+          {recentActivity.length > 0 && (
+            <motion.div variants={item}>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-church-gold mb-4 border-b border-church-border pb-2">Log / Recent Activity</h2>
+              <div className="space-y-1">
+                {recentActivity.map(page => {
+                  const section = sections.find(s => s.id === page.sectionId)
+                  return (
+                    <div key={page.id} className="flex flex-col gap-2 p-3 bg-church-surface border border-church-border hover:border-church-gold transition-colors group">
+                      <div className="flex items-start justify-between min-w-0 gap-4">
+                        <Link
+                          to={`/sections/${page.sectionId}`}
+                          className="font-bold text-sm text-church-textMain group-hover:text-church-gold truncate block"
+                        >
+                          {page.title}
+                        </Link>
+                        <StatusBadge status={page.status || 'Not Started'} />
+                      </div>
+                      <span className="text-[10px] uppercase font-mono tracking-widest text-church-textMuted truncate">
+                        DIR: {section?.name || 'ROOT'}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
         </div>
-      )}
-    </div>
+
+      </div>
+    </motion.div>
   )
 }

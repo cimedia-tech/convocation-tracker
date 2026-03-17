@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Navbar() {
   const { userProfile, logout } = useAuth()
@@ -10,67 +11,85 @@ export default function Navbar() {
   const isAdmin = userProfile?.role === 'admin'
 
   const navLinks = [
-    { to: '/', label: 'Dashboard' },
-    { to: '/sections', label: 'Sections' },
-    ...(isAdmin ? [{ to: '/team', label: 'Team' }] : []),
+    { to: '/', label: 'Overview' },
+    { to: '/sections', label: 'Index' },
+    ...(isAdmin ? [{ to: '/team', label: 'Operatives' }] : []),
   ]
 
   return (
-    <nav className="bg-church-navy shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14">
+    <nav className="bg-church-background border-b border-church-border sticky top-0 z-50 font-technical">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        <div className="flex items-center justify-between h-16">
           {/* Brand */}
-          <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.png" alt="Apostolic Faith Churches of Deliverance Logo" className="h-10 w-auto" />
-            <span className="text-church-gold font-bold text-lg tracking-wide hidden sm:inline-block">✝ Convocation</span>
+          <Link to="/" className="flex items-center gap-4 group">
+            <div className="w-8 h-8 bg-church-gold flex items-center justify-center transition-transform group-hover:scale-95">
+              <span className="text-church-background font-bold text-sm">✝</span>
+            </div>
+            <span className="text-church-textMain font-serif italic text-xl tracking-wide hidden sm:inline-block group-hover:text-church-gold transition-colors">
+              Convocation<span className="text-church-textMuted not-italic text-sm ml-1">Tracker.</span>
+            </span>
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(link => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  location.pathname === link.to
-                    ? 'bg-church-gold text-church-navy'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex items-center gap-6 text-sm tracking-widest uppercase">
+              {navLinks.map(link => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`py-5 transition-colors relative ${
+                    location.pathname === link.to
+                      ? 'text-church-gold font-bold'
+                      : 'text-church-textMuted hover:text-church-textMain'
+                  }`}
+                >
+                  {link.label}
+                  {location.pathname === link.to && (
+                    <motion.div 
+                      layoutId="nav-indicator"
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-church-gold"
+                    />
+                  )}
+                </Link>
+              ))}
+            </div>
 
-          {/* User menu (desktop) */}
-          <div className="hidden md:flex items-center gap-3">
-            {userProfile?.photo && (
-              <img src={userProfile.photo} alt="" className="w-8 h-8 rounded-full border-2 border-church-gold" />
-            )}
-            <span className="text-gray-300 text-sm">{userProfile?.name?.split(' ')[0]}</span>
-            {isAdmin && (
-              <span className="text-xs bg-church-gold/20 text-church-gold border border-church-gold/40 px-2 py-0.5 rounded-full">Admin</span>
-            )}
-            <button
-              onClick={logout}
-              className="text-xs text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 px-3 py-1 rounded-lg transition-colors"
-            >
-              Sign Out
-            </button>
+            <div className="h-6 w-[1px] bg-church-border mx-2"></div>
+
+            {/* User menu (desktop) */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                {userProfile?.photo && (
+                  <img src={userProfile.photo} alt="" className="w-8 h-8 grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all border border-church-border" />
+                )}
+                <div className="flex flex-col">
+                  <span className="text-church-textMain text-xs font-bold uppercase tracking-wider">{userProfile?.name?.split(' ')[0]}</span>
+                  {isAdmin && (
+                    <span className="text-[10px] text-church-gold uppercase tracking-widest">Admin</span>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={logout}
+                className="text-xs uppercase tracking-widest text-church-textMuted hover:text-church-textMain border border-church-border hover:border-white px-4 py-2 transition-colors duration-300"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-gray-300 hover:text-white p-2"
+            className="md:hidden text-church-textMuted hover:text-church-textMain p-2 border border-transparent hover:border-church-border transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
           </button>
@@ -78,35 +97,50 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-church-darknavy border-t border-white/10 px-4 py-3 space-y-1">
-          {navLinks.map(link => (
-            <Link
-              key={link.to}
-              to={link.to}
-              onClick={() => setMenuOpen(false)}
-              className={`block px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === link.to
-                  ? 'bg-church-gold text-church-navy'
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="flex items-center justify-between pt-2 border-t border-white/10 mt-2">
-            <div className="flex items-center gap-2">
-              {userProfile?.photo && (
-                <img src={userProfile.photo} alt="" className="w-7 h-7 rounded-full border border-church-gold" />
-              )}
-              <span className="text-gray-300 text-sm">{userProfile?.name}</span>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden bg-church-surface border-b border-church-border overflow-hidden"
+          >
+            <div className="px-4 py-6 flex flex-col gap-6">
+              <div className="flex flex-col gap-4">
+                {navLinks.map(link => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMenuOpen(false)}
+                    className={`text-sm uppercase tracking-widest ${
+                      location.pathname === link.to
+                        ? 'text-church-gold font-bold'
+                        : 'text-church-textMuted hover:text-church-textMain'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="h-[1px] w-full bg-church-border"></div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {userProfile?.photo && (
+                    <img src={userProfile.photo} alt="" className="w-8 h-8 grayscale border border-church-border" />
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-church-textMain text-xs font-bold uppercase">{userProfile?.name}</span>
+                    <span className="text-[10px] text-church-gold uppercase tracking-widest">{isAdmin ? 'Admin' : 'Operative'}</span>
+                  </div>
+                </div>
+                <button onClick={logout} className="text-xs text-church-textMuted border border-church-border px-4 py-2 uppercase hover:text-white transition-colors">
+                  Sign Out
+                </button>
+              </div>
             </div>
-            <button onClick={logout} className="text-xs text-gray-400 border border-gray-600 px-3 py-1 rounded-lg">
-              Sign Out
-            </button>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }

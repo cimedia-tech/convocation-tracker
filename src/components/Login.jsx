@@ -1,49 +1,99 @@
 import { useAuth } from '../contexts/AuthContext'
+import { motion } from 'framer-motion'
 
 export default function Login() {
   const { loginWithGoogle } = useAuth()
 
   return (
-    <div className="min-h-screen bg-church-navy flex flex-col items-center justify-center px-4">
-      {/* Logo / Header */}
-      <div className="text-center mb-10">
-        <div className="w-20 h-20 bg-church-gold rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <span className="text-3xl text-church-navy font-bold">✝</span>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-church-gold tracking-wide">
-          Convocation Book Tracker
-        </h1>
-        <p className="text-gray-400 mt-2 text-sm md:text-base">
-          Media Team Production Dashboard
-        </p>
-      </div>
+    <div className="min-h-screen bg-church-background text-church-textMain flex flex-col lg:flex-row overflow-hidden font-technical">
+      
+      {/* 70% Atmospheric Void (Left) */}
+      <div className="relative hidden lg:flex flex-col justify-center w-[70%] h-screen border-r border-church-border bg-church-background p-16">
+        
+        {/* Grain Texture Overlay */}
+        <div className="absolute inset-0 z-0 bg-noise pointer-events-none"></div>
 
-      {/* Login Card */}
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Welcome</h2>
-        <p className="text-gray-500 text-sm mb-6">
-          Sign in with your Google account to access the team dashboard.
-        </p>
-        <button
-          onClick={loginWithGoogle}
-          className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-church-gold hover:bg-church-cream rounded-xl px-4 py-3 transition-all duration-200 shadow-sm hover:shadow-md group"
+        <motion.div 
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ type: "spring", stiffness: 40, damping: 20, delay: 0.1 }}
+          className="relative z-10 flex flex-col justify-center h-full max-w-4xl"
         >
-          {/* Google G icon */}
-          <svg className="w-5 h-5" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          <span className="text-gray-700 font-medium group-hover:text-church-navy">
-            Continue with Google
-          </span>
-        </button>
+          {/* Subtle Accent Line */}
+          <motion.div 
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ type: "spring", stiffness: 50, duration: 1 }}
+            className="h-[1px] w-24 bg-church-gold mb-12 origin-left"
+          />
+
+          <h1 className="text-7xl xl:text-8xl 2xl:text-[9rem] font-serif italic text-church-textMain leading-[0.9] tracking-tight selection:bg-church-gold selection:text-church-background cursor-default">
+            Convocation <br/>
+            <span className="text-church-textMuted not-italic">Tracker.</span>
+          </h1>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="absolute bottom-12 left-16 z-10 text-church-textMuted text-sm font-light tracking-widest uppercase"
+        >
+          SYSTEM STATUS: ONLINE <span className="text-church-gold ml-2">•</span>
+        </motion.div>
       </div>
 
-      <p className="text-gray-600 text-xs mt-6 text-center max-w-xs">
-        Access is restricted to approved team members. Contact your administrator if you need access.
-      </p>
+      {/* 30% Control Panel (Right) */}
+      <div className="w-full lg:w-[30%] min-h-screen bg-church-surface flex flex-col justify-center p-8 lg:p-12 relative z-20">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.3 }}
+          className="w-full max-w-sm mx-auto flex flex-col gap-10"
+        >
+          {/* Mobile Title (Hidden on Desktop) */}
+          <div className="lg:hidden mb-8">
+            <h1 className="text-5xl font-serif italic text-church-textMain leading-tight">
+              Convocation<br/>Tracker.
+            </h1>
+            <div className="h-[1px] w-12 bg-church-gold mt-6"></div>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold uppercase tracking-widest text-church-textMain">Authorization</h2>
+            <p className="text-church-textMuted text-sm leading-relaxed border-l-2 border-church-border pl-4">
+              Access is strictly limited to active media team operatives. Authenticate to proceed.
+            </p>
+          </div>
+
+          <div className="pt-4">
+            <motion.button
+              whileHover={{ scale: 0.98, backgroundColor: '#ffffff', color: '#000000' }}
+              whileTap={{ scale: 0.95 }}
+              onClick={loginWithGoogle}
+              className="w-full flex items-center justify-between bg-transparent border border-church-border hover:border-white text-church-textMain px-6 py-4 transition-colors duration-300 group rounded-none"
+            >
+              <span className="font-semibold tracking-wider text-sm uppercase">Authenticate</span>
+              <svg 
+                className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" 
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </motion.button>
+          </div>
+          
+          <div className="mt-auto pt-24 lg:pt-32">
+            <p className="text-[10px] text-church-textMuted uppercase tracking-widest opacity-50">
+              © {new Date().getFullYear()} MEDIA PRODUCTION DB.
+              <br/>RESTRICTED ENVIRONMENT.
+            </p>
+          </div>
+
+        </motion.div>
+      </div>
+
     </div>
   )
 }

@@ -13,8 +13,8 @@ function AppRoutes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-church-navy flex items-center justify-center">
-        <div className="text-church-gold text-xl animate-pulse font-semibold">Loading…</div>
+      <div className="min-h-screen bg-church-background flex items-center justify-center font-technical">
+        <div className="text-church-gold text-xl animate-pulse tracking-widest uppercase">Initializing System...</div>
       </div>
     )
   }
@@ -23,7 +23,7 @@ function AppRoutes() {
   if (userProfile?.role === 'pending') return <PendingAccess />
 
   return (
-    <div className="min-h-screen bg-church-cream">
+    <div className="min-h-screen bg-church-background text-church-textMain font-technical">
       <Navbar />
       <main>
         <Routes>

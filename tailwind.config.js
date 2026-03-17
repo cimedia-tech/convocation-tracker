@@ -8,13 +8,19 @@ export default {
     extend: {
       colors: {
         church: {
-          gold: '#C9A84C',
+          gold: '#C9A84C',       // Accent
           darkgold: '#8B6914',
-          navy: '#1a2744',
-          darknavy: '#0f1a30',
-          cream: '#FDF8F0',
-          lightgold: '#F5E6C0',
+          navy: '#1a2744',       // Legacy
+          background: '#0a0f1a', // Deep Atmospheric Slate / Black
+          surface: '#111827',    // Slightly lighter for input fields or structural columns
+          border: 'rgba(255, 255, 255, 0.1)', // Sharp raw borders
+          textMain: '#ffffff',
+          textMuted: '#9ca3af',
         }
+      },
+      fontFamily: {
+        serif: ['"Playfair Display"', 'serif'],
+        technical: ['"Space Grotesk"', 'sans-serif'],
       }
     },
   },

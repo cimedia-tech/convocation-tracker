@@ -6,6 +6,20 @@ import ProgressBar from './ProgressBar'
 import AddSectionModal from './AddSectionModal'
 import BulkImport from './BulkImport'
 import { useAuth } from '../contexts/AuthContext'
+import { motion } from 'framer-motion'
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+}
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60, damping: 15 } }
+}
 
 export default function SectionList() {
   const { userProfile } = useAuth()
@@ -29,55 +43,67 @@ export default function SectionList() {
 
   if (sectLoading || pagesLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-church-navy text-lg animate-pulse">Loading sections…</div>
+      <div className="flex items-center justify-center min-h-[50vh] font-technical text-church-gold tracking-widest uppercase text-xs animate-pulse">
+        Polling Database...
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="max-w-7xl mx-auto px-4 sm:px-8 py-12 font-technical"
+    >
+      {/* Editorial Header */}
+      <motion.div variants={item} className="flex flex-col md:flex-row justify-between items-end pb-6 border-b border-church-border mb-12">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-church-navy">Book Sections</h1>
-          <p className="text-gray-500 text-sm mt-1">{sections.length} section{sections.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-5xl md:text-6xl font-serif italic text-church-textMain leading-[0.9] tracking-tight">
+            Section Index
+            <span className="text-church-gold not-italic">.</span>
+          </h1>
         </div>
-        {isAdmin && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowBulkImport(true)}
-              className="border border-church-gold text-church-gold bg-transparent px-4 py-2 rounded-xl text-sm font-semibold hover:bg-church-gold/10 transition-colors"
-            >
-              Bulk Import
-            </button>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="bg-church-navy text-church-gold border border-church-gold px-4 py-2 rounded-xl text-sm font-semibold hover:bg-church-darknavy transition-colors"
-            >
-              + Add Section
-            </button>
-          </div>
-        )}
-      </div>
+        <div className="flex flex-col md:items-end gap-4 mt-6 md:mt-0">
+          <p className="text-[10px] text-church-textMuted uppercase tracking-widest font-bold">
+            {sections.length} DIR ACTIVE
+          </p>
+          {isAdmin && (
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowBulkImport(true)}
+                className="text-xs uppercase tracking-widest text-church-textMuted hover:text-white border border-church-border px-4 py-2 hover:border-white transition-colors"
+              >
+                Bulk Import
+              </button>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="text-xs uppercase tracking-widest bg-church-gold text-church-background font-bold px-4 py-2 hover:bg-white transition-colors"
+              >
+                + Initialize Directory
+              </button>
+            </div>
+          )}
+        </div>
+      </motion.div>
 
       {sections.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-5xl mb-4">📖</div>
-          <h2 className="text-xl font-semibold text-gray-600 mb-2">No sections yet</h2>
-          <p className="text-gray-400 text-sm mb-6">Start building the convocation book by adding the first section.</p>
+        <motion.div variants={item} className="text-center py-24 border border-dashed border-church-border">
+          <div className="text-5xl mb-6 opacity-50">✦</div>
+          <h2 className="text-xl font-serif italic text-church-textMain leading-tight mb-2">No active directories</h2>
+          <p className="text-church-textMuted text-xs uppercase tracking-widest mb-8">System requires initialization of the first section.</p>
           {isAdmin && (
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-church-navy text-church-gold border border-church-gold px-6 py-2.5 rounded-xl text-sm font-semibold"
+              className="bg-church-gold text-church-background px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-white transition-colors"
             >
-              + Add First Section
+              Initialize Directory
             </button>
           )}
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {sections.map(section => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1px] bg-church-border">
+          {sections.map((section, index) => {
             const sectionPages = pages.filter(p => p.sectionId === section.id)
             const pct = sectionPages.length
               ? sectionPages.reduce((sum, p) => sum + (STATUS_WEIGHT[p.status] || 0), 0) / sectionPages.length
@@ -85,43 +111,67 @@ export default function SectionList() {
             const approved = sectionPages.filter(p => p.status === 'Approved').length
 
             return (
-              <div key={section.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                <div className="bg-church-navy px-4 py-3 flex items-start justify-between gap-2">
+              <motion.div 
+                key={section.id} 
+                variants={item}
+                className="bg-church-surface flex flex-col justify-between hover:bg-church-background transition-colors group relative overflow-hidden"
+              >
+                {/* ID Tag */}
+                <div className="absolute top-0 right-0 bg-church-border px-2 py-1 text-[8px] font-mono text-church-textMuted uppercase tracking-widest">
+                  DIR-{String(index + 1).padStart(3, '0')}
+                </div>
+
+                <div className="p-6 md:p-8 flex-grow flex flex-col">
+                  {/* Header Area */}
+                  <div className="mb-8 mt-4">
+                     <Link
+                      to={`/sections/${section.id}`}
+                      className="font-serif italic text-3xl text-church-textMain group-hover:text-church-gold transition-colors block leading-[1.1] mb-4"
+                    >
+                      {section.name}
+                    </Link>
+                    {section.description && (
+                      <p className="text-xs text-church-textMuted leading-relaxed line-clamp-3 pl-4 border-l-2 border-church-border">
+                        {section.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Stats & Progress Bottom Area */}
+                  <div className="mt-auto space-y-4">
+                    <ProgressBar percent={pct} size="sm" />
+                    <div className="flex items-center justify-between text-[10px] uppercase font-mono tracking-widest">
+                      <span className="text-church-textMuted">
+                        {String(sectionPages.length).padStart(2, '0')} PG
+                      </span>
+                      <span className="text-church-gold font-bold">
+                        {String(approved).padStart(2, '0')} ACK
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Action Bar */}
+                <div className="bg-church-background border-t border-church-border px-6 py-3 flex items-center justify-between">
                   <Link
                     to={`/sections/${section.id}`}
-                    className="text-church-gold font-semibold text-base hover:text-church-lightgold transition-colors leading-snug"
+                    className="text-[10px] font-bold text-church-textMuted uppercase tracking-widest group-hover:text-church-gold transition-colors"
                   >
-                    {section.name}
+                    Enter Directory →
                   </Link>
                   {isAdmin && (
                     <button
                       onClick={() => handleDeleteSection(section)}
-                      className="text-gray-500 hover:text-red-400 flex-shrink-0 p-0.5 transition-colors"
+                      className="text-church-textMuted hover:text-[#ff4444] transition-colors pb-0.5"
                       title="Delete section"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path strokeLinecap="square" strokeLinejoin="miter" d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" />
                       </svg>
                     </button>
                   )}
                 </div>
-                <div className="p-4 space-y-3">
-                  {section.description && (
-                    <p className="text-xs text-gray-500 line-clamp-2">{section.description}</p>
-                  )}
-                  <ProgressBar percent={pct} size="sm" />
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{sectionPages.length} page{sectionPages.length !== 1 ? 's' : ''}</span>
-                    <span className="text-green-600 font-medium">{approved} approved</span>
-                  </div>
-                  <Link
-                    to={`/sections/${section.id}`}
-                    className="block text-center text-xs font-semibold text-church-navy border border-church-navy/20 hover:bg-church-navy hover:text-church-gold rounded-lg py-1.5 transition-colors"
-                  >
-                    View Pages →
-                  </Link>
-                </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>
@@ -129,6 +179,6 @@ export default function SectionList() {
 
       {showAddModal && <AddSectionModal onClose={() => setShowAddModal(false)} />}
       {showBulkImport && <BulkImport onClose={() => setShowBulkImport(false)} />}
-    </div>
+    </motion.div>
   )
 }
