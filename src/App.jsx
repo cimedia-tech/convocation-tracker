@@ -7,6 +7,11 @@ import Dashboard from './components/Dashboard'
 import SectionList from './components/SectionList'
 import SectionDetail from './components/SectionDetail'
 import TeamManager from './components/TeamManager'
+import ConvocationList from './components/ConvocationList'
+import ConvocationDetail from './components/ConvocationDetail'
+import SessionDetail from './components/SessionDetail'
+import PeopleRoster from './components/PeopleRoster'
+import GroupList from './components/GroupList'
 
 function AppRoutes() {
   const { user, userProfile, loading } = useAuth()
@@ -27,11 +32,16 @@ function AppRoutes() {
       <Navbar />
       <main>
         <Routes>
-          <Route path="/"                    element={<Dashboard />} />
-          <Route path="/sections"            element={<SectionList />} />
-          <Route path="/sections/:sectionId" element={<SectionDetail />} />
-          <Route path="/team"                element={<TeamManager />} />
-          <Route path="*"                    element={<Navigate to="/" replace />} />
+          <Route path="/"                           element={<Dashboard />} />
+          <Route path="/sections"                   element={<SectionList />} />
+          <Route path="/sections/:sectionId"        element={<SectionDetail />} />
+          <Route path="/events"                     element={<ConvocationList />} />
+          <Route path="/events/:convocationId"      element={<ConvocationDetail />} />
+          <Route path="/sessions/:sessionId"        element={<SessionDetail />} />
+          <Route path="/people"                     element={<PeopleRoster />} />
+          <Route path="/groups"                     element={<GroupList />} />
+          <Route path="/team"                       element={<TeamManager />} />
+          <Route path="*"                           element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>

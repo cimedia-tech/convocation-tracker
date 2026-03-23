@@ -8,11 +8,19 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
 
+  function isActive(to) {
+    if (to === '/') return location.pathname === '/'
+    return location.pathname === to || location.pathname.startsWith(to + '/')
+  }
+
   const isAdmin = userProfile?.role === 'admin'
 
   const navLinks = [
     { to: '/', label: 'Overview' },
-    { to: '/sections', label: 'Index' },
+    { to: '/events', label: 'Events' },
+    { to: '/people', label: 'People' },
+    { to: '/groups', label: 'Groups' },
+    { to: '/sections', label: 'Book' },
     ...(isAdmin ? [{ to: '/team', label: 'Operatives' }] : []),
   ]
 
@@ -38,13 +46,13 @@ export default function Navbar() {
                   key={link.to}
                   to={link.to}
                   className={`py-5 transition-colors relative ${
-                    location.pathname === link.to
+                    isActive(link.to)
                       ? 'text-church-gold font-bold'
                       : 'text-church-textMuted hover:text-church-textMain'
                   }`}
                 >
                   {link.label}
-                  {location.pathname === link.to && (
+                  {isActive(link.to) && (
                     <motion.div 
                       layoutId="nav-indicator"
                       className="absolute bottom-0 left-0 right-0 h-[2px] bg-church-gold"
@@ -113,7 +121,7 @@ export default function Navbar() {
                     to={link.to}
                     onClick={() => setMenuOpen(false)}
                     className={`text-sm uppercase tracking-widest ${
-                      location.pathname === link.to
+                      isActive(link.to)
                         ? 'text-church-gold font-bold'
                         : 'text-church-textMuted hover:text-church-textMain'
                     }`}
